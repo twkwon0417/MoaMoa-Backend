@@ -1,5 +1,44 @@
-# MoaMoa-Backend
-## 📢 브랜치 전략
+# MoaMoa Backend (fork)
+
+Fork of [KUIT-MoaMoa/MoaMoa-Backend](https://github.com/KUIT-MoaMoa/MoaMoa-Backend), the backend of MoaMoa, a web service built by a team from the KUIT developer club. I was the backend lead and the top contributor to this repository.
+
+Period: Dec 2024 – Mar 2025
+
+## My role
+
+- **Backend lead.** Designed the API and the package structure, reviewed pull requests, and split work between the backend developers.
+- **Authentication.** Implemented login with Spring Security, an OAuth2 client, and JWT. The frontend team first planned to keep tokens in local storage. Because of the XSS risk, we reviewed their code and the remaining schedule together and agreed on HttpOnly cookies with `Secure` and `SameSite=None`, plus CORS. I submitted the frontend request changes myself as a pull request.
+- **Production cookie bug.** Just before release, the login cookie was not stored in production even though it worked locally. I checked the difference between the two environments in order (HTTPS, then CORS, then `SameSite`) and fixed it before the planned release.
+- **Deployment and CI/CD.** Wrote the GitHub Actions pipelines:
+  - CI on pushes and pull requests to `main` and `dev`: Gradle build, tests, and a test report on the pull request
+  - CD: build a Docker image, push it to the registry, then connect to the server over SSH, pull the new image, and restart the container
+- **Logging.** Set up centralized logging with Promtail, Loki, and Grafana because debugging the frontend-backend connection on the deployed servers was slow without logs.
+
+## Stack
+
+- Java 17, Spring Boot 3.4, Spring Data JPA, Spring Security, OAuth2 client, JWT (jjwt)
+- MySQL (H2 for local development)
+- WebSocket with STOMP, Spring Mail, springdoc OpenAPI
+- Docker, Nginx with Let's Encrypt (certbot), GitHub Actions
+
+## Architecture
+
+```
+GitHub Actions ──build & push──▶ Docker registry
+       │ SSH
+       ▼
+App server:  Nginx (HTTPS) ──▶ Spring Boot container ──▶ MySQL
+                                  │ /var/log/springboot
+                              Promtail
+                                  │ push
+Monitor server:              Loki ──▶ Grafana
+```
+
+---
+
+## Team conventions (original README)
+
+### 📢 브랜치 전략
 | 태그이름       | 내용                                          |
 |------------|---------------------------------------------|
 | `main`     | 실제 서비스에 배포될 브랜치                              |
@@ -11,7 +50,7 @@
 feat/기능명
 ```
 
-## 📢 커밋 컨벤션
+### 📢 커밋 컨벤션
 
 | 태그이름       | 내용                                          |
 |------------|---------------------------------------------|
