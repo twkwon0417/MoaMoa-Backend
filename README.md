@@ -1,27 +1,20 @@
 # MoaMoa Backend (fork)
 
-Fork of [KUIT-MoaMoa/MoaMoa-Backend](https://github.com/KUIT-MoaMoa/MoaMoa-Backend), the backend of MoaMoa, a web service built by a team from the KUIT developer club. I was the backend lead and the top contributor to this repository.
+Fork of [KUIT-MoaMoa/MoaMoa-Backend](https://github.com/KUIT-MoaMoa/MoaMoa-Backend), the backend of MoaMoa, a web service made by a team from the KUIT developer club from December 2024 to March 2025. I was the backend lead and made the most commits to this repository.
 
-Period: Dec 2024 – Mar 2025
+## What I did
 
-## My role
-
-- **Backend lead.** Designed the API and the package structure, reviewed pull requests, and split work between the backend developers.
-- **Authentication.** Implemented login with Spring Security, an OAuth2 client, and JWT. The frontend team first planned to keep tokens in local storage. Because of the XSS risk, we reviewed their code and the remaining schedule together and agreed on HttpOnly cookies with `Secure` and `SameSite=None`, plus CORS. I submitted the frontend request changes myself as a pull request.
-- **Production cookie bug.** Just before release, the login cookie was not stored in production even though it worked locally. I checked the difference between the two environments in order (HTTPS, then CORS, then `SameSite`) and fixed it before the planned release.
-- **Deployment and CI/CD.** Wrote the GitHub Actions pipelines:
-  - CI on pushes and pull requests to `main` and `dev`: Gradle build, tests, and a test report on the pull request
-  - CD: build a Docker image, push it to the registry, then connect to the server over SSH, pull the new image, and restart the container
-- **Logging.** Set up centralized logging with Promtail, Loki, and Grafana because debugging the frontend-backend connection on the deployed servers was slow without logs.
+- Decided the API and package structure, reviewed pull requests, and split the backend work.
+- Built login with Spring Security, an OAuth2 client and JWT. The frontend team wanted to keep tokens in local storage; because of the XSS risk, we went through their code and the remaining schedule together and settled on HttpOnly cookies (`Secure`, `SameSite=None`) with CORS. I made the frontend request changes myself and sent them as a pull request.
+- Just before release, the login cookie worked locally but was not saved in production. I compared the two environments one setting at a time, HTTPS first, then CORS, then `SameSite`, and had it fixed before the release date.
+- Wrote the GitHub Actions workflows. CI builds and tests every push and pull request to `main` and `dev` and posts a test report on the pull request. CD builds a Docker image, pushes it to the registry, then logs in to the server over SSH, pulls the image and restarts the container.
+- Set up Promtail, Loki and Grafana for the backend logs. Once the frontend and backend were running on the servers, tracking down a failed request between them without logs was slow.
 
 ## Stack
 
-- Java 17, Spring Boot 3.4, Spring Data JPA, Spring Security, OAuth2 client, JWT (jjwt)
-- MySQL (H2 for local development)
-- WebSocket with STOMP, Spring Mail, springdoc OpenAPI
-- Docker, Nginx with Let's Encrypt (certbot), GitHub Actions
+Java 17, Spring Boot 3.4, Spring Data JPA, Spring Security, OAuth2 client, JWT (jjwt), MySQL (H2 locally), WebSocket with STOMP, Spring Mail, springdoc OpenAPI, Docker, Nginx with Let's Encrypt, GitHub Actions.
 
-## Architecture
+## Deployment
 
 ```
 GitHub Actions ──build & push──▶ Docker registry
